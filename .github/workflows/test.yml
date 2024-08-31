@@ -53,6 +53,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node_version }}
+          architecture: ${{ matrix.architecture }}
           cache: ${{ matrix.package_manager }}
 
       - name: Install test app dependencies
