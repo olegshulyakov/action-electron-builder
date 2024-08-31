@@ -1,9 +1,6 @@
 name: Test
 
 on:
-  # schedule:
-  #   # every day at 10:00 UTC
-  #   - cron: "0 10 * * *"
   push:
     paths-ignore:
       - "/*.sh"
@@ -32,8 +29,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
+        arch: ["--x64", "--arm64"]
         package_manager: [npm, yarn, pnpm]
-        #        package_root: [ "./test/app-in-root/", "./test/app-in-subdirectory/", "./test/vue-app" ]
         package_root: ["./test/app-in-root/", "./test/app-in-subdirectory/"]
 
     steps:
