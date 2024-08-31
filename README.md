@@ -18,41 +18,44 @@ GitHub Actions allows you to build your app on macOS, Windows and Linux without 
 
 3. **Add a workflow file** to your project (e.g. `.github/workflows/build.yml`):
 
-   ```yml
-   name: Build/release
+```yml
+name: Build/Release for ${{ matrix.os }}-${{ matrix.architecture }}
+on: push
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        node_version:
+          - current
+        architecture:
+          - x64
+          - arm64
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
 
-   on: push
+      - name: Install Node.js, NPM and Yarn
+        with: actions/setup-node@v4
+          node-version: ${{ matrix.node_version }}
+          cache: ${{ matrix.package_manager }}
 
-   jobs:
-     release:
-       runs-on: ${{ matrix.os }}
+      - name: Build/Release Electron app
+        uses: olegshulyakov/action-electron-builder@v1.0.0
+        with:
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
+          github_token: ${{ secrets.github_token }}
+          # If the commit is tagged with a version (e.g. "v1.0.0"),
+          # release the app after building
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+```
 
-       strategy:
-         matrix:
-           os: [macos-latest, ubuntu-latest, windows-latest]
-
-       steps:
-         - name: Check out Git repository
-           uses: actions/checkout@v1
-
-         - name: Install Node.js, NPM and Yarn
-           uses: actions/setup-node@v1
-           with:
-             node-version: "current"
-
-         - name: Build/release Electron app
-           uses: Yan-Jobs/action-electron-builder@v1.7.0
-           with:
-             # GitHub token, automatically provided to the action
-             # (No need to define this secret in the repo settings)
-             github_token: ${{ secrets.github_token }}
-
-             # If the commit is tagged with a version (e.g. "v1.0.0"),
-             # release the app after building
-             release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-   ```
-
-- On macOS it will also create an arm release for your M1/M2 users
+- On macOS it will also create an arm release for your Apple M users
 
 ## Usage
 
@@ -103,7 +106,7 @@ Add the following options to your workflow's existing `action-electron-builder` 
 
 ```yml
 - name: Build/release Electron app
-  uses: johannesjo/action-electron-builder@v1
+  uses: olegshulyakov/action-electron-builder@v1.0.0
   with:
     # ...
     mac_certs: ${{ secrets.mac_certs }}
@@ -137,7 +140,7 @@ If you've configured `electron-builder` to notarize your Electron Mac app [as de
 
    ```yml
    - name: Build/release Electron app
-     uses: johannesjo/action-electron-builder@v1
+     uses: olegshulyakov/action-electron-builder@v1.0.0
      with:
        # ...
      env:
