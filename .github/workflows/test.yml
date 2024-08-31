@@ -1,9 +1,8 @@
 name: Test
 
 on:
-  # schedule:
-  #   # every day at 10:00 UTC
-  #   - cron: "0 10 * * *"
+  schedule:
+    - cron: "0 10 15 */3 *" # every 3 months at 10:00 UTC
   push:
     paths-ignore:
       - "/*.sh"
@@ -25,15 +24,24 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Test ${{ matrix.package_manager }} ${{ matrix.node_version }}-${{ matrix.architecture }} on ${{ matrix.os }} for ${{ matrix.package_root }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        package_manager: [npm, yarn, pnpm]
-        #        package_root: [ "./test/app-in-root/", "./test/app-in-subdirectory/", "./test/vue-app" ]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        node_version:
+          - current
+        architecture:
+          - x64
+          - arm64
+        package_manager:
+          - npm
+          - yarn
         package_root: ["./test/app-in-root/", "./test/app-in-subdirectory/"]
 
     steps:
@@ -45,11 +53,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Install package manager
-        if: ${{ matrix.package_manager != 'npm' }}
-        run: npm install -g ${{ matrix.package_manager }}
+          node-version: ${{ matrix.node_version }}
+          cache: ${{ matrix.package_manager }}
 
       - name: Install test app dependencies
         run: |
