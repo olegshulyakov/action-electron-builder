@@ -22,7 +22,7 @@ on:
 
 jobs:
   test:
-    name: Test ${{ matrix.package_manager }} on ${{ matrix.os }} NodeJS ${{ matrix.node_version }} - ${{ matrix.architecture }}
+    name: Test ${{ matrix.package_manager }} ${{ matrix.node_version }}-${{ matrix.architecture }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -34,7 +34,6 @@ jobs:
           - windows-latest
         node_version:
           - current
-          - latest
         architecture:
           - x64
           - arm64
@@ -54,7 +53,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node_version }}
-          architecture: ${{ matrix.architecture }}
           cache: ${{ matrix.package_manager }}
 
       - name: Install package manager
