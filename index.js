@@ -175,10 +175,10 @@ const runAction = () => {
 
 	if (pacMan === PackageManager.NPM) {
 		cmd = "npx --no-install";
-	} else if (PackageManager.YARN) {
+	} else if (pacMan === PackageManager.YARN) {
 		cmd = "yarn run";
 	} else {
-		cmd = "pnpx --no-install";
+		cmd = "pnpx";
 	}
 
 	for (let i = 0; i < maxAttempts; i += 1) {
